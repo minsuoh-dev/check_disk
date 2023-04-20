@@ -57,7 +57,7 @@ if [ -z "$DEVICE_NAME" ]; then
 fi
 
 echo "Checking storage size..."
-STORAGE_SIZE=$(parted /dev/$DEVICE_NAME unit GB print | grep Disk | awk '{print $3}' | sed 's/GB//')
+STORAGE_SIZE=$(lsblk -o NAME,SIZE -b /dev/$DEVICE_NAME | grep $DEVICE_NAME$ | awk '{print $2}' | numfmt --to=iec-i --suffix=B --format="%.0f" | sed 's/B//')
 
 if [ $(echo "$STORAGE_SIZE > 1900" | bc) -eq 1 ]; then
     create_gpt_partition
@@ -81,4 +81,5 @@ echo "DEVICE_SIZE: $STORAGE_SIZE GB"
 echo "DEVICE_PARTITION_TYPE: $DEVICE_PARTITION_TYPE"
 echo "DEVICE_HEALTH: $DEVICE_HEALTH"
 
+echo "Mount OK: $MOUNT_STATUS"
 echo "Finished."
